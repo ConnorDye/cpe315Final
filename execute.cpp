@@ -184,13 +184,13 @@ void execute() {
           // needs stats and flags
           rf.write(alu.instr.addr.rd, rf[alu.instr.addr.rn] + rf[alu.instr.addr.rm]);
           setCarryOverflow(rf[alu.instr.addr.rn], rf[alu.instr.addr.rm], OF_ADD);
-          setNegativeZero(rf[alu.instr.add.rd], 32);
+          //setNegativeZero(rf[alu.instr.add.rd], 32);
           stats.numRegReads += 2;
           stats.numRegWrites += 1;
           break;
         case ALU_SUBR:
           rf.write(alu.instr.subr.rd, rf[alu.instr.subr.rn] - alu.instr.subr.rm);
-          setCarryOverflow(rf[alu.instr.subr.rd], 32);
+          setCarryOverflow(rf[alu.instr.subr.rd], rf[alu.instr.subr.rm], OF_SUB);
           stats.numRegReads += 1;
           stats.numRegWrites += 1;
           break;
@@ -203,11 +203,11 @@ void execute() {
         case ALU_MOV:
           // needs stats and flags
           rf.write(alu.instr.mov.rdn, alu.instr.mov.imm);
-          setNegativeZero(rf[alu.instr.mov.rdn], 32);
+          //setNegativeZero(rf[alu.instr.mov.rdn], 32);
           stats.numRegWrites += 1;
           break;
         case ALU_CMP:
-          setCarryOverflow()
+          setCarryOverflow(rf[alu.instr.cmp.rdn], alu.instr.cmp.imm, OF_SUB);
           break;
         case ALU_ADD8I:
           // needs stats and flags
