@@ -1,6 +1,6 @@
 #include "thumbsim.hpp"
 // These are just the register NUMBERS
-#define PC_REG 15  
+#define PC_REG 15
 #define LR_REG 14
 #define SP_REG 13
 
@@ -89,7 +89,7 @@ void setCarryOverflow (int num1, int num2, OFType oftype) {
   }
 }
 
-// CPE 315: You're given the code for evaluating BEQ, and you'll need to 
+// CPE 315: You're given the code for evaluating BEQ, and you'll need to
 // complete the rest of these conditions. See Page 208 of the armv7 manual
 static int checkCondition(unsigned short cond) {
   switch(cond) {
@@ -183,8 +183,16 @@ void execute() {
         case ALU_ADDR:
           // needs stats and flags
           rf.write(alu.instr.addr.rd, rf[alu.instr.addr.rn] + rf[alu.instr.addr.rm]);
+          setCarryOverflow(rf[alu.instr.addr.rn], rf[alu.instr.addr.rm], OF_ADD);
+          setNegativeZero(rf[alu.instr.add.rd], 32);
+          stats.numRegReads += 2;
+          stats.numRegWrites += 1;
           break;
         case ALU_SUBR:
+          rf.write(alu.instr.subr.rd, rf[alu.instr.subr.rn] - alu.instr.subr.rm);
+          setCarryOverflow(rf[alu.instr.subr.rd], 32);
+          stats.numRegReads += 1;
+          stats.numRegWrites += 1;
           break;
         case ALU_ADD3I:
           // needs stats and flags
@@ -195,8 +203,11 @@ void execute() {
         case ALU_MOV:
           // needs stats and flags
           rf.write(alu.instr.mov.rdn, alu.instr.mov.imm);
+          setNegativeZero(rf[alu.instr.mov.rdn], 32);
+          stats.numRegWrites += 1;
           break;
         case ALU_CMP:
+          setCarryOverflow()
           break;
         case ALU_ADD8I:
           // needs stats and flags
@@ -210,7 +221,7 @@ void execute() {
           break;
       }
       break;
-    case BL: 
+    case BL:
       // This instruction is complete, nothing needed here
       bl_ops = decode(blupper);
       if (bl_ops == BL_UPPER) {
@@ -218,7 +229,7 @@ void execute() {
         instr2 = imem[PC];
         BL_Type bllower(instr2);
         if (blupper.instr.bl_upper.s) {
-          addr = static_cast<unsigned int>(0xff<<24) | 
+          addr = static_cast<unsigned int>(0xff<<24) |
             ((~(bllower.instr.bl_lower.j1 ^ blupper.instr.bl_upper.s))<<23) |
             ((~(bllower.instr.bl_lower.j2 ^ blupper.instr.bl_upper.s))<<22) |
             ((blupper.instr.bl_upper.imm10)<<12) |
@@ -234,7 +245,7 @@ void execute() {
         rf.write(PC_REG, PC + 2 + addr);
 
         stats.numRegReads += 1;
-        stats.numRegWrites += 2; 
+        stats.numRegWrites += 2;
       }
       else {
         cerr << "Bad BL format." << endl;
