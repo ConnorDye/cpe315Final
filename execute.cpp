@@ -256,11 +256,17 @@ void execute() {
           // needs stats and flags
           rf.write(alu.instr.add3i.rd, rf[alu.instr.add3i.rn] + alu.instr.add3i.imm);
           setCarryOverflow(rf[alu.instr.add3i.rn], alu.instr.add3i.imm, OF_ADD);
-          setNegativeZero(rf[]);
+          setNegativeZero(rf[alu.instr.add3i.rd]);
           stats.numRegReads += 1;
           stats.numRegWrites += 1;
           break;
         case ALU_SUB3I:
+          rf.write(alu.instr.sub3i.rd, rf[alu.instr.sub3i.rn] - alu.instr.sub3i.imm);
+          setCarryOverflow(rf[alu.instr.sub3i.rn], alu.instr.sub3i.imm, OF_SUB);
+          setNegativeZero(rf[alu.instr.sub3i.rd]);
+
+          stats.numRegReads += 1;
+          stats.numRegWrites += 1;
           break;
         case ALU_MOV:
           // needs stats and flags
