@@ -280,11 +280,17 @@ void execute() {
         case ALU_ADD8I:
           // needs stats and flags
           rf.write(alu.instr.add8i.rdn, rf[alu.instr.add8i.rdn] + alu.instr.add8i.imm);
+          setCarryOverflow(rf[alu.instr.add8i.rdn], alu.instr.add8i.imm, OF_ADD);
+          setNegativeZero(rf[alu.instr.add8i.rdn]);
+
           stats.numRegWrites += 1;
           stats.numRegReads += 1;
           break;
         case ALU_SUB8I:
           rf.write(alu.instr.sub8i.rdn, rf[alu.instr.sub8i.rdn] - alu.instr.sub8i.imm);
+          setCarryOverflow(rf[alu.instr.sub8i.rdn], alu.instr.sub8i.imm, OF_SUB);
+          setNegativeZero(rf[alu.instr.sub8i.rdn]);
+
           stats.numRegReads += 1;
           stats.numRegWrites += 1;
           break;
