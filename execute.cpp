@@ -23,6 +23,12 @@ unsigned int signExtend8to32ui(char i) {
   return static_cast<unsigned int>(static_cast<int>(i));
 }
 
+unsigned int signExtend11to32ui(int i) {
+  int mask = 2047;
+  i = (i << 21) >> 21;
+  return static_cast<unsigned int>(static_cast<int>(i & mask));
+}
+
 // This is the global object you'll use to store condition codes N,Z,V,C
 // Set these bits appropriately in execute below.
 ASPR flags;
@@ -30,6 +36,18 @@ ASPR flags;
 // CPE 315: You need to implement a function to set the Negative and Zero
 // flags for each instruction that does that. It only needs to take
 // one parameter as input, the result of whatever operation is executing
+void setNegativeZero(int num) {
+    if (num < 0) {
+        flags.N = 1;
+    }
+    else if (num == 0) {
+        flags.Z = 1;
+    }
+    else {
+        flags.N = 0;
+        flags.Z = 1;
+    }
+}
 
 // This function is complete, you should not have to modify it
 void setCarryOverflow (int num1, int num2, OFType oftype) {
@@ -99,30 +117,69 @@ static int checkCondition(unsigned short cond) {
       }
       break;
     case NE:
+      if (flags.Z == 1) {
+        return TRUE;
+      }
       break;
     case CS:
+      if (flags.C == 1) {
+        return TRUE;
+      }
       break;
     case CC:
+      if (flags.C == 0) {
+        return TRUE;
+      }
       break;
     case MI:
+      if (flags.N == 1) {
+        return TRUE;
+      }
       break;
     case PL:
+      if (flags.N == 0) {
+        return TRUE;
+      }
       break;
     case VS:
+      if (flags.V == 1) {
+        return TRUE;
+      }
       break;
     case VC:
+      if (flags.V == 0) {
+        return TRUE;
+      }
       break;
     case HI:
+      if (flags.C == 1 && flags.Z == 0) {
+        return TRUE;
+      }
       break;
     case LS:
+      if (flags.C == 0 || flags.Z == 1) {
+        return TRUE;
+      }
       break;
     case GE:
+      if (flags.N == flags.V) {
+        return TRUE;
+      }
       break;
     case LT:
+      if (flags.N != flags.V) {
+        return TRUE;
+      }
       break;
     case GT:
+      if (flags.Z == 0 && flags.N == flags.V) {
+        return TRUE;
+      }
       break;
     case LE:
+      if (flags.Z == 1 || flags.N != flags.V) {
+        return TRUE;
+      }
       break;
     case AL:
       return TRUE;
@@ -184,26 +241,29 @@ void execute() {
           // needs stats and flags
           rf.write(alu.instr.addr.rd, rf[alu.instr.addr.rn] + rf[alu.instr.addr.rm]);
           setCarryOverflow(rf[alu.instr.addr.rn], rf[alu.instr.addr.rm], OF_ADD);
-          //setNegativeZero(rf[alu.instr.add.rd], 32);
+          setNegativeZero(rf[alu.instr.addr.rd]);//, 32);
           stats.numRegReads += 2;
           stats.numRegWrites += 1;
           break;
         case ALU_SUBR:
           rf.write(alu.instr.subr.rd, rf[alu.instr.subr.rn] - alu.instr.subr.rm);
           setCarryOverflow(rf[alu.instr.subr.rd], rf[alu.instr.subr.rm], OF_SUB);
-          stats.numRegReads += 1;
+          setNegativeZero(rf[alu.instr.subr.rd]);//, 32);
+          stats.numRegReads += 2;
           stats.numRegWrites += 1;
           break;
         case ALU_ADD3I:
           // needs stats and flags
           rf.write(alu.instr.add3i.rd, rf[alu.instr.add3i.rn] + alu.instr.add3i.imm);
+          setCarryOverflow(rf[alu.instr.add3i.rn], alu.instr.add3i.imm, OF_ADD);
+          setNegativeZero(rf[])
           break;
         case ALU_SUB3I:
           break;
         case ALU_MOV:
           // needs stats and flags
           rf.write(alu.instr.mov.rdn, alu.instr.mov.imm);
-          //setNegativeZero(rf[alu.instr.mov.rdn], 32);
+          setNegativeZero(rf[alu.instr.mov.rdn]);//, 32);
           stats.numRegWrites += 1;
           break;
         case ALU_CMP:
@@ -340,6 +400,7 @@ void execute() {
       // Essentially the same as the conditional branches, but with no
       // condition check, and an 11-bit immediate field
       decode(uncond);
+      rf.write(PC_REG, PC + 2 * signExtend11to32ui(uncond.instr.b.imm11) + 2);
       break;
     case LDM:
       decode(ldm);
