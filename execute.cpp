@@ -256,7 +256,9 @@ void execute() {
           // needs stats and flags
           rf.write(alu.instr.add3i.rd, rf[alu.instr.add3i.rn] + alu.instr.add3i.imm);
           setCarryOverflow(rf[alu.instr.add3i.rn], alu.instr.add3i.imm, OF_ADD);
-          setNegativeZero(rf[])
+          setNegativeZero(rf[]);
+          stats.numRegReads += 1;
+          stats.numRegWrites += 1;
           break;
         case ALU_SUB3I:
           break;
@@ -272,8 +274,13 @@ void execute() {
         case ALU_ADD8I:
           // needs stats and flags
           rf.write(alu.instr.add8i.rdn, rf[alu.instr.add8i.rdn] + alu.instr.add8i.imm);
+          stats.numRegWrites += 1;
+          stats.numRegReads += 1;
           break;
         case ALU_SUB8I:
+          rf.write(alu.instr.sub8i.rdn, rf[alu.instr.sub8i.rdn] - alu.instr.sub8i.imm);
+          stats.numRegReads += 1;
+          stats.numRegWrites += 1;
           break;
         default:
           cout << "instruction not implemented" << endl;
