@@ -534,7 +534,7 @@ void execute()
       break;
     }
     break;
-  case COND:
+  case COND: {
     decode(cond);
     stats.numBranches += 1;
     int offsetCond = 2 * signExtend8to32ui(cond.instr.b.imm) + 2;
@@ -557,8 +557,8 @@ void execute()
     else {
         stats.numForwardBranchesNotTaken += 1;
     }
-    break;
-  case UNCOND:
+    }break;
+  case UNCOND: {
     // Essentially the same as the conditional branches, but with no
     // condition check, and an 11-bit immediate field
     decode(uncond);
@@ -571,7 +571,7 @@ void execute()
         stats.numForwardBranchesTaken += 1;
     }
     rf.write(PC_REG, PC + 2 * signExtend11to32ui(uncond.instr.b.imm) + 2);
-    break;
+    }break;
   case LDM:
     decode(ldm);
     // need to implement
