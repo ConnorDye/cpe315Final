@@ -320,7 +320,7 @@ void execute()
       break;
     case ALU_CMP:
       setCarryOverflow(rf[alu.instr.cmp.rdn], alu.instr.cmp.imm, OF_SUB);
-      setNegativeZero(rf[alu.instr.cmp.rdn]);
+      setNegativeZero(rf[alu.instr.cmp.rdn] - alu.instr.cmp.imm);
       break;
     case ALU_ADD8I:
       // needs stats and flags
