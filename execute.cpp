@@ -563,14 +563,14 @@ void execute()
     // condition check, and an 11-bit immediate field
     decode(uncond);
     stats.numBranches += 1;
-    int offset = 2 * signExtend11to32ui(uncond.instr.b.imm11) + 2;
+    int offset = 2 * signExtend11to32ui(uncond.instr.b.imm) + 2;
     if (PC > PC + offset) {
         stats.numBackwardBranchesTaken += 1;
     }
     else {
         stats.numForwardBranchesTaken += 1;
     }
-    rf.write(PC_REG, PC + 2 * signExtend11to32ui(uncond.instr.b.imm11) + 2);
+    rf.write(PC_REG, PC + 2 * signExtend11to32ui(uncond.instr.b.imm) + 2);
     break;
   case LDM:
     decode(ldm);
