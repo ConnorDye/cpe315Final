@@ -280,8 +280,10 @@ void execute()
     case ALU_ADDR:
       // needs stats and flags
       rf.write(alu.instr.addr.rd, rf[alu.instr.addr.rn] + rf[alu.instr.addr.rm]);
+
       setCarryOverflow(rf[alu.instr.addr.rn], rf[alu.instr.addr.rm], OF_ADD);
       setNegativeZero(rf[alu.instr.addr.rd]); //, 32);
+      
       stats.numRegReads += 2;
       stats.numRegWrites += 1;
       break;
@@ -293,10 +295,11 @@ void execute()
       stats.numRegWrites += 1;
       break;
     case ALU_ADD3I:
-      // needs stats and flags
       rf.write(alu.instr.add3i.rd, rf[alu.instr.add3i.rn] + alu.instr.add3i.imm);
+
       setCarryOverflow(rf[alu.instr.add3i.rn], alu.instr.add3i.imm, OF_ADD);
       setNegativeZero(rf[alu.instr.add3i.rd]);
+
       stats.numRegReads += 1;
       stats.numRegWrites += 1;
       break;
@@ -392,6 +395,7 @@ void execute()
     case SP_MOV:
       // needs stats and flags
       rf.write((sp.instr.mov.d << 3) | sp.instr.mov.rd, rf[sp.instr.mov.rm]);
+
       stats.numRegWrites += 1;
       stats.numRegReads += 1;
       break;
@@ -464,10 +468,60 @@ void execute()
     switch (misc_ops)
     {
     case MISC_PUSH:
-      // need to implement
+      for (int x = 1; x < 9; x++)
+      {
+        // push all active registers to the stack
+        if ((misc.instr.push.reg_list << (8 - x)) & 128)
+        {
+          // store register value on the stack
+          // ded the stack pointer by 4
+          dmem.write(rf[SP_REG], rf[x - 1]);
+          rf.write(SP_REG, rf[SP_REG] - 4);
+
+          stats.numMemWrites += 1;
+          stats.numRegReads += 1;
+        }
+      }
+
+      // lr included
+      if (misc.instr.push.m)
+      {
+        // store lr on the stack
+        // dec the stack pointer by 4
+        dmem.write(rf[SP_REG], rf[LR_REG]);
+        rf.write(SP_REG, rf[SP_REG] - 4);
+
+        stats.numMemWrites += 1;
+        stats.numRegReads += 1;
+      }
       break;
     case MISC_POP:
-      // need to implement
+      for (int x = 1; x < 9; x++)
+      {
+        // push all active registers to the stack
+        if ((misc.instr.pop.reg_list << (8 - x)) & 128)
+        {
+          // store register value on the stack
+          // increment the stack pointer by 4
+          rf.write(x - 1, dmem[rf[SP_REG]]);
+
+          rf.write(SP_REG, rf[SP_REG] + 4);
+          stats.numMemReads += 1;
+          stats.numRegWrites += 1;
+        }
+      }
+
+      if (misc.instr.pop.m)
+      {
+        // store lr value into pc
+        // increment the stack pointer by 4
+        rf.write(PC_REG, dmem[rf[SP_REG]]);
+
+        rf.write(SP_REG, rf[SP_REG] + 4);
+
+        stats.numMemWrites += 1;
+        stats.numRegReads += 1;
+      }
       break;
     case MISC_SUB:
       // functionally complete, needs stats
