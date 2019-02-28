@@ -284,7 +284,7 @@ void execute()
 
       setCarryOverflow(rf[alu.instr.addr.rn], rf[alu.instr.addr.rm], OF_ADD);
       setNegativeZero(rf[alu.instr.addr.rd]); //, 32);
-      
+
       stats.numRegReads += 2;
       stats.numRegWrites += 1;
       break;
@@ -537,13 +537,13 @@ void execute()
   case COND:
     decode(cond);
     stats.numBranches += 1;
-    int offset = 2 * signExtend8to32ui(cond.instr.b.imm) + 2;
+    int offsetCond = 2 * signExtend8to32ui(cond.instr.b.imm) + 2;
     // Once you've completed the checkCondition function,
     // this should work for all your conditional branches.
     // needs stats
     if (checkCondition(cond.instr.b.cond))
     {
-      if (PC > PC + offset) {
+      if (PC > PC + offsetCond) {
           stats.numBackwardBranchesTaken += 1;
       }
       else {
@@ -551,7 +551,7 @@ void execute()
       }
       rf.write(PC_REG, PC + 2 * signExtend8to32ui(cond.instr.b.imm) + 2);
     }
-    if (PC > PC + offset) {
+    if (PC > PC + offsetCond) {
         stats.numBackwardBranchesNotTaken += 1;
     }
     else {
@@ -563,8 +563,8 @@ void execute()
     // condition check, and an 11-bit immediate field
     decode(uncond);
     stats.numBranches += 1;
-    int offset = 2 * signExtend11to32ui(uncond.instr.b.imm) + 2;
-    if (PC > PC + offset) {
+    int offsetUncond = 2 * signExtend11to32ui(uncond.instr.b.imm) + 2;
+    if (PC > PC + offsetUncond) {
         stats.numBackwardBranchesTaken += 1;
     }
     else {
