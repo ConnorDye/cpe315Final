@@ -477,7 +477,7 @@ void execute()
           // store register value on the stack
           // ded the stack pointer by 4
           dmem.write(rf[SP_REG], rf[x - 1]);
-          rf.write(SP_REG, rf[SP_REG] - 4);
+          rf.write(SP_REG, rf[SP_REG] + 4);
 
           stats.numMemWrites += 1;
           stats.numRegReads += 1;
