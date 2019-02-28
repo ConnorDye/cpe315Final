@@ -401,7 +401,7 @@ void execute()
       stats.numRegReads += 1;
       break;
     case SP_ADD:
-      //rf.write((sp.instr.add.d << 3 ) | sp.instr.add.rd, rf[sp.instr.add.rm] + rf[sp.instr.add.]);
+      rf.write((sp.instr.add.d << 3 ) | sp.instr.add.rd, rf[SP_REG] + rf[sp.instr.add.rm]);
       stats.numRegWrites += 1;
       stats.numRegReads += 1;
       break;
