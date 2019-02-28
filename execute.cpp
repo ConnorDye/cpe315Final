@@ -25,6 +25,7 @@ unsigned int signExtend8to32ui(char i)
   return static_cast<unsigned int>(static_cast<int>(i));
 }
 
+// Might be unfinished **********************
 unsigned int signExtend11to32ui(int i)
 {
   int mask = 2047;
@@ -481,18 +482,40 @@ void execute()
     break;
   case COND:
     decode(cond);
+    stats.numBranches += 1;
+    int offset = 2 * signExtend8to32ui(cond.instr.b.imm) + 2;
     // Once you've completed the checkCondition function,
     // this should work for all your conditional branches.
     // needs stats
     if (checkCondition(cond.instr.b.cond))
     {
+      if (PC > PC + offset) {
+          stats.numBackwardBranchesTaken += 1;
+      }
+      else {
+          stats.numForwardBranchesTaken += 1;
+      }
       rf.write(PC_REG, PC + 2 * signExtend8to32ui(cond.instr.b.imm) + 2);
+    }
+    if (PC > PC + offset) {
+        stats.numBackwardBranchesNotTaken += 1;
+    }
+    else {
+        stats.numForwardBranchesNotTaken += 1;
     }
     break;
   case UNCOND:
     // Essentially the same as the conditional branches, but with no
     // condition check, and an 11-bit immediate field
     decode(uncond);
+    stats.numBranches += 1;
+    int offset = 2 * signExtend11to32ui(uncond.instr.b.imm11) + 2;
+    if (PC > PC + offset) {
+        stats.numBackwardBranchesTaken += 1;
+    }
+    else {
+        stats.numForwardBranchesTaken += 1;
+    }
     rf.write(PC_REG, PC + 2 * signExtend11to32ui(uncond.instr.b.imm11) + 2);
     break;
   case LDM:
