@@ -490,7 +490,7 @@ void execute()
         // store lr on the stack
         // dec the stack pointer by 4
         dmem.write(rf[SP_REG], rf[LR_REG]);
-        rf.write(SP_REG, rf[SP_REG] - 4);
+        rf.write(SP_REG, rf[SP_REG] + 4);
 
         stats.numMemWrites += 1;
         stats.numRegReads += 1;
@@ -506,7 +506,7 @@ void execute()
           // increment the stack pointer by 4
           rf.write(x - 1, dmem[rf[SP_REG]]);
 
-          rf.write(SP_REG, rf[SP_REG] + 4);
+          rf.write(SP_REG, rf[SP_REG] - 4);
           stats.numMemReads += 1;
           stats.numRegWrites += 1;
         }
@@ -518,7 +518,7 @@ void execute()
         // increment the stack pointer by 4
         rf.write(PC_REG, dmem[rf[SP_REG]]);
 
-        rf.write(SP_REG, rf[SP_REG] + 4);
+        rf.write(SP_REG, rf[SP_REG] - 4);
 
         stats.numMemWrites += 1;
         stats.numRegReads += 1;
