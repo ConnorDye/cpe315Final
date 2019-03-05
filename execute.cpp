@@ -290,7 +290,7 @@ void execute()
       break;
     case ALU_SUBR:
       rf.write(alu.instr.subr.rd, rf[alu.instr.subr.rn] - rf[alu.instr.subr.rm]);
-      setCarryOverflow(rf[alu.instr.subr.rd], rf[alu.instr.subr.rm], OF_SUB);
+      setCarryOverflow(rf[alu.instr.subr.rn], rf[alu.instr.subr.rm], OF_SUB);
       setNegativeZero(rf[alu.instr.subr.rd]); //, 32);
 
       stats.numRegReads += 5;
@@ -300,7 +300,7 @@ void execute()
       rf.write(alu.instr.add3i.rd, rf[alu.instr.add3i.rn] + alu.instr.add3i.imm);
 
       setCarryOverflow(rf[alu.instr.add3i.rn], alu.instr.add3i.imm, OF_ADD);
-      setNegativeZero(rf[alu.instr.add3i.rd] + alu.instr.add3i.imm);
+      setNegativeZero(rf[alu.instr.add3i.rd]);
 
       stats.numRegReads += 3;
       stats.numRegWrites += 1;
@@ -308,7 +308,7 @@ void execute()
     case ALU_SUB3I:
       rf.write(alu.instr.sub3i.rd, rf[alu.instr.sub3i.rn] - alu.instr.sub3i.imm);
       setCarryOverflow(rf[alu.instr.sub3i.rn], alu.instr.sub3i.imm, OF_SUB);
-      setNegativeZero(rf[alu.instr.sub3i.rd] - alu.instr.sub3i.imm);
+      setNegativeZero(rf[alu.instr.sub3i.rd]);
 
       stats.numRegReads += 3;
       stats.numRegWrites += 1;
@@ -323,7 +323,7 @@ void execute()
       break;
     case ALU_CMP:
       setCarryOverflow(rf[alu.instr.cmp.rdn], alu.instr.cmp.imm, OF_SUB);
-      setNegativeZero(rf[alu.instr.cmp.rdn] - alu.instr.cmp.imm);
+      setNegativeZero(rf[alu.instr.cmp.rdn]);
 
       stats.numRegReads +=2;
       break;
@@ -331,7 +331,7 @@ void execute()
       // needs stats and flags
       rf.write(alu.instr.add8i.rdn, rf[alu.instr.add8i.rdn] + alu.instr.add8i.imm);
       setCarryOverflow(rf[alu.instr.add8i.rdn], alu.instr.add8i.imm, OF_ADD);
-      setNegativeZero(rf[alu.instr.add8i.rdn] + alu.instr.add8i.imm);
+      setNegativeZero(rf[alu.instr.add8i.rdn]);
 
       stats.numRegWrites += 3;
       stats.numRegReads += 1;
@@ -339,7 +339,7 @@ void execute()
     case ALU_SUB8I:
       rf.write(alu.instr.sub8i.rdn, rf[alu.instr.sub8i.rdn] - alu.instr.sub8i.imm);
       setCarryOverflow(rf[alu.instr.sub8i.rdn], alu.instr.sub8i.imm, OF_SUB);
-      setNegativeZero(rf[alu.instr.sub8i.rdn] - alu.instr.sub8i.imm);
+      setNegativeZero(rf[alu.instr.sub8i.rdn]);
 
       stats.numRegReads += 3;
       stats.numRegWrites += 1;
