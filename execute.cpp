@@ -626,6 +626,8 @@ void execute()
     // needs stats
     decode(addsp);
     rf.write(addsp.instr.add.rd, SP + (addsp.instr.add.imm * 4));
+    stats.numRegReads += 2;
+    stats.numRegWrites++;
     break;
   default:
     cout << "[ERROR] Unknown Instruction to be executed" << endl;
