@@ -53,7 +53,7 @@ void setNegativeZero(int num)
   else
   {
     flags.N = 0;
-    flags.Z = 1;
+    flags.Z = 0;
   }
 }
 
@@ -411,7 +411,7 @@ void execute()
       break;
     case SP_ADD:
       rf.write((sp.instr.add.d << 3) | sp.instr.add.rd, rf[SP_REG] + rf[sp.instr.add.rm]);
-      
+
       stats.numRegWrites += 1;
       stats.numRegReads += 1;
       break;
