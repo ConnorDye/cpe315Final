@@ -571,13 +571,15 @@ void execute()
       }
       rf.write(PC_REG, PC + 2 * signExtend8to32ui(cond.instr.b.imm) + 2);
     }
-    if (PC > PC + offsetCond)
-    {
-      stats.numBackwardBranchesNotTaken += 1;
-    }
-    else
-    {
-      stats.numForwardBranchesNotTaken += 1;
+    else {
+        if (PC > PC + offsetCond)
+        {
+            stats.numBackwardBranchesNotTaken += 1;
+        }
+        else
+        {
+            stats.numForwardBranchesNotTaken += 1;
+        }
     }
   }
   break;
@@ -586,16 +588,6 @@ void execute()
     // Essentially the same as the conditional branches, but with no
     // condition check, and an 11-bit immediate field
     decode(uncond);
-    stats.numBranches += 1;
-    int offsetUncond = 2 * signExtend11to32ui(uncond.instr.b.imm) + 2;
-    if (PC > PC + offsetUncond)
-    {
-      stats.numBackwardBranchesTaken += 1;
-    }
-    else
-    {
-      stats.numForwardBranchesTaken += 1;
-    }
     rf.write(PC_REG, PC + 2 * signExtend11to32ui(uncond.instr.b.imm) + 2);
   }
   break;
@@ -640,4 +632,5 @@ void execute()
     exit(1);
     break;
   }
+  stats.instrs++;
 }
