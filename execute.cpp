@@ -323,7 +323,7 @@ void execute()
       break;
     case ALU_CMP:
       setCarryOverflow(rf[alu.instr.cmp.rdn], alu.instr.cmp.imm, OF_SUB);
-      setNegativeZero(rf[alu.instr.cmp.rdn]);
+      setNegativeZero(rf[alu.instr.cmp.rdn] - alu.instr.cmp.imm);
 
       stats.numRegReads +=2;
       break;
@@ -391,6 +391,10 @@ void execute()
     {
     case DP_CMP:
       // need to implement
+      setCarryOverflow(rf[dp.instr.DP_Instr.rdn], rf[dp.instr.DP_Instr.rm], OF_SUB);
+      setNegativeZero(rf[dp.instr.DP_Instr.rdn] -  rf[dp.instr.DP_Instr.rm]);
+
+      stats.numRegReads +=4;
       break;
     }
     break;
