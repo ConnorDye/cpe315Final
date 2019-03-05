@@ -53,7 +53,7 @@ void setNegativeZero(int num)
   else
   {
     flags.N = 0;
-    flags.Z = 1;
+    flags.Z = 0;
   }
 }
 
@@ -325,7 +325,7 @@ void execute()
       setCarryOverflow(rf[alu.instr.cmp.rdn], alu.instr.cmp.imm, OF_SUB);
       setNegativeZero(rf[alu.instr.cmp.rdn] - alu.instr.cmp.imm);
 
-      stats.numRegReads +=2;
+      stats.numRegReads += 2;
       break;
     case ALU_ADD8I:
       // needs stats and flags
@@ -392,9 +392,9 @@ void execute()
     case DP_CMP:
       // need to implement
       setCarryOverflow(rf[dp.instr.DP_Instr.rdn], rf[dp.instr.DP_Instr.rm], OF_SUB);
-      setNegativeZero(rf[dp.instr.DP_Instr.rdn] -  rf[dp.instr.DP_Instr.rm]);
+      setNegativeZero(rf[dp.instr.DP_Instr.rdn] - rf[dp.instr.DP_Instr.rm]);
 
-      stats.numRegReads +=4;
+      stats.numRegReads += 4;
       break;
     }
     break;
@@ -411,9 +411,9 @@ void execute()
       break;
     case SP_ADD:
       rf.write((sp.instr.add.d << 3) | sp.instr.add.rd, rf[SP_REG] + rf[sp.instr.add.rm]);
-      
+
       stats.numRegWrites += 1;
-      stats.numRegReads += 1;
+      stats.numRegReads += 2;
       break;
     case SP_CMP:
       // need to implement these
@@ -490,7 +490,7 @@ void execute()
           rf.write(SP_REG, rf[SP_REG] + 4);
 
           stats.numMemWrites += 1;
-          stats.numRegReads += 1;
+          stats.numRegReads += 3;
         }
       }
 
@@ -503,7 +503,8 @@ void execute()
         rf.write(SP_REG, SP + 4);
 
         stats.numMemWrites += 1;
-        stats.numRegReads += 1;
+        stats.numRegWrites += 1;
+        stats.numRegReads += 2;
       }
       break;
     case MISC_POP:
@@ -517,8 +518,10 @@ void execute()
           rf.write(x - 1, dmem[rf[SP_REG]]);
 
           rf.write(SP_REG, rf[SP_REG] - 4);
+
           stats.numMemReads += 1;
-          stats.numRegWrites += 1;
+          stats.numRegReads += 2;
+          stats.numRegWrites += 2;
         }
       }
 
@@ -530,8 +533,8 @@ void execute()
 
         rf.write(SP_REG, SP - 4);
 
-        stats.numMemWrites += 1;
-        stats.numRegReads += 1;
+        stats.numRegWrites += 2;
+        stats.numMemReads += 1;
       }
       break;
     case MISC_SUB:
@@ -543,6 +546,8 @@ void execute()
     case MISC_ADD:
       // functionally complete, needs stats
       rf.write(SP_REG, SP + (misc.instr.add.imm * 4));
+
+      stats.numRegWrites += 1;
       break;
     }
     break;
