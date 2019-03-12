@@ -429,6 +429,8 @@ void execute()
     case STRI:
       // functionally complete, needs stats
       addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm * 4;
+
+      caches.access(addr);
       dmem.write(addr, rf[ld_st.instr.ld_st_imm.rt]);
 
       stats.numMemWrites += 1;
@@ -437,6 +439,8 @@ void execute()
     case LDRI:
       // functionally complete, needs stats
       addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm * 4;
+
+      caches.access(addr);
       rf.write(ld_st.instr.ld_st_imm.rt, dmem[addr]);
 
       stats.numRegWrites += 1;
@@ -446,6 +450,8 @@ void execute()
     case STRR:
       // need to implement
       addr = rf[ld_st.instr.ld_st_reg.rn] + rf[ld_st.instr.ld_st_reg.rm] * 4;
+
+      caches.access(addr);
       dmem.write(addr, rf[ld_st.instr.ld_st_reg.rt]);
 
       stats.numMemWrites += 1;
@@ -454,6 +460,8 @@ void execute()
     case LDRR:
       // need to implement
       addr = rf[ld_st.instr.ld_st_reg.rn] + rf[ld_st.instr.ld_st_reg.rm] * 4;
+
+      caches.access(addr);
       rf.write(ld_st.instr.ld_st_reg.rt, dmem[addr]);
 
       stats.numRegWrites += 1;
@@ -486,6 +494,7 @@ void execute()
         {
           // store register value on the stack
           // ded the stack pointer by 4
+          caches.access(rf[SP_REG]);
           dmem.write(rf[SP_REG], rf[x - 1]);
           rf.write(SP_REG, SP - 4);
 
@@ -500,6 +509,8 @@ void execute()
       {
         // store lr on the stack
         // dec the stack pointer by 4
+
+        caches.access(rf[SP_REG]);
         dmem.write(rf[SP_REG], rf[LR_REG]);
         rf.write(SP_REG, SP - 4);
 
@@ -516,6 +527,7 @@ void execute()
         {
           // store register value on the stack
           // increment the stack pointer by 4
+          caches.access(SP);
           rf.write(x - 1, dmem[SP]);
 
           rf.write(SP_REG, SP + 4);
@@ -530,6 +542,7 @@ void execute()
       {
         // store lr value into pc
         // increment the stack pointer by 4
+        caches.access(SP);
         rf.write(PC_REG, dmem[SP]);
 
         rf.write(SP_REG, SP + 4);
@@ -635,7 +648,7 @@ void execute()
     decode(addsp);
 
     rf.write(addsp.instr.add.rd, SP + (addsp.instr.add.imm * 4));
-    
+
     stats.numRegReads += 2;
     stats.numRegWrites += 1;
     break;
