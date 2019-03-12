@@ -491,6 +491,7 @@ void execute()
 
           stats.numMemWrites += 1;
           stats.numRegReads += 2;
+          stats.numRegWrites += 1;
         }
       }
 
@@ -520,7 +521,7 @@ void execute()
           rf.write(SP_REG, SP + 4);
 
           stats.numMemReads += 1;
-          stats.numRegReads++;
+          stats.numRegReads += 1;
           stats.numRegWrites += 2;
         }
       }
@@ -534,21 +535,22 @@ void execute()
         rf.write(SP_REG, SP + 4);
 
         stats.numRegWrites += 2;
-        stats.numRegReads++;
+        stats.numRegReads += 1;
         stats.numMemReads += 1;
       }
       break;
     case MISC_SUB:
       // functionally complete, needs stats
       rf.write(SP_REG, SP - (misc.instr.sub.imm * 4));
-      stats.numRegReads++;
+
+      stats.numRegReads += 1;
       stats.numRegWrites += 1;
       break;
     case MISC_ADD:
       // functionally complete, needs stats
       rf.write(SP_REG, SP + (misc.instr.add.imm * 4));
 
-      stats.numRegReads++;
+      stats.numRegReads += 1;
       stats.numRegWrites += 1;
       break;
     }
@@ -622,18 +624,20 @@ void execute()
     rf.write(ldrl.instr.ldrl.rt, temp);
 
     // One write for updated reg
-    stats.numRegWrites++;
+    stats.numRegWrites += 1;
     // One read of the PC
-    stats.numRegReads++;
+    stats.numRegReads += 1;
     // One mem read, even though it's imem, and there's two of them
-    stats.numMemReads++;
+    stats.numMemReads += 2;
     break;
   case ADD_SP:
     // needs stats
     decode(addsp);
+
     rf.write(addsp.instr.add.rd, SP + (addsp.instr.add.imm * 4));
+    
     stats.numRegReads += 2;
-    stats.numRegWrites++;
+    stats.numRegWrites += 1;
     break;
   default:
     cout << "[ERROR] Unknown Instruction to be executed" << endl;
