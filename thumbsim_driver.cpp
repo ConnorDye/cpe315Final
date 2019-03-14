@@ -1,3 +1,4 @@
+#include <bitset>
 #include "thumbsim.hpp"
 
 template <>
@@ -138,10 +139,10 @@ bool Cache::access(unsigned int address)
 {
   int numOfBlocks = size / blocksize;
   int index = (int)log2(numOfBlocks);
+  int indexLocation = index + (int) log2(blocksize);
 
-  int indexValue = (1 << index) & address;
-  int tagValue = address > index;
-  cout << address << "     " << numOfBlocks << "     " << blocksize << "     " << indexValue << "     " << tagValue << endl;
+  int tagValue = address >> indexLocation;
+  int indexValue = (((1 << index) - 1) & (address >> (int) log2(blocksize)));
 
   if (entries[indexValue] == tagValue){
     hits++;
