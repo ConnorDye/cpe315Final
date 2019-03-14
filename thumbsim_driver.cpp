@@ -136,12 +136,12 @@ void Memory<Data32, Data32>::dump(DataType dt) const
 // "misses" counters.
 bool Cache::access(unsigned int address)
 {
-  int cacheBlock = size / blocksize;
-  int index = (int)log2(cacheBlock);
-  int tag = (int)log2(address) - index;
+  int numOfBlocks = size / blocksize;
+  int index = (int)log2(numOfBlocks);
 
-  int tagValue = (((1 << tag) - 1) & (address >> (index - 1)));
   int indexValue = (1 << index) & address;
+  int tagValue = address > index;
+  cout << address << "     " << numOfBlocks << "     " << blocksize << "     " << indexValue << "     " << tagValue << endl;
 
   if (entries[indexValue] == tagValue){
     hits++;
